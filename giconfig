@@ -1,0 +1,48 @@
+[alias]
+    alias = ! git config --get-regexp '^alias\\.' |sed -e 's/^alias\\.//' -e 's/\\ /\\ =\\ /' -e 's/\\(^.\\{1,60\\}\\).*/\\1/'
+    co = checkout
+    dt = difftool
+    mt = mergetool
+    up = pull 
+
+[color]
+    branch = auto 
+    decorate = auto 
+    diff = auto 
+    grep = auto 
+    interactive = auto 
+    showbranch = auto 
+    status = auto 
+    ui = auto 
+
+[core]
+    editor = code --wait
+    excludefile = ~/.gitignore
+    symliks = true
+    whitspace = trailing-space
+	autocrlf = input
+[diff]
+    tool = vimdiff
+[difftool]
+    prompt = true
+[fetch]
+    prune = true
+    prunTags = true
+[init]
+	defaultBranch = main
+[merge]
+    tool = vimdiff
+[pager]
+	branch = false
+[protocol]
+    version = 2
+[pull]
+    prune = true 
+    rebase = true 
+[push]
+    default = simple
+[submodule]
+    recurse = true
+
+[user]
+	name = Dintho
