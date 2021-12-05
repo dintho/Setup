@@ -43,12 +43,6 @@ case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
 esac
 
-# Setting GIT PS1 Options
-export GIT_PS1_SHOWDIRTYSTATE="true"
-export GIT_PS1_SHOWSTASHSTATE="true"
-export GIT_PS1_SHOWUNTRACKEDFILES="true"
-export GIT_PS1_SHOWUPSTREAM="auto"
-export GIT_PS1_SHOWCOLORHINTS="true"
 
 #pyenv config
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -77,7 +71,7 @@ fi
 if [ "$color_prompt" = yes ]; then
     # override default virtualenv indicator in prompt
     VIRTUAL_ENV_DISABLE_PROMPT=1
-
+    check_prev_cmd() { [ $? = 0 ] && echo ✅ || echo ❌;}
     prompt_color='\[\033[;32m\]'
     info_color='\[\033[1;34m\]'
     prompt_symbol=㉿
@@ -86,13 +80,19 @@ if [ "$color_prompt" = yes ]; then
 	info_color='\[\033[1;31m\]'
 	prompt_symbol=💀
     fi
-    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-#PS1='\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\] @ \[\033[0;36m\]\h \w\[\033[0;32m\]$(__git_ps1)\n\[\033[0;32m\]└─\[\033[0m\033[0;32m\] \$\[\033[0m\033[0;32m\] ▶\[\033[0m\] '
-
-
-    PS1=$prompt_color'┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)'$prompt_color')}$(__git_ps1)('$info_color'\u${prompt_symbol}\h'$prompt_color')-[\[\033[0;1m\]\w'$prompt_color']\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
-    # BackTrack red prompt
-    #PS1='${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV)) }${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    if [ -f /etc/bash_completion.d/git-prompt.sh ] || [ -f ~/.git-prompt.sh ]; then # Setting GIT PS1 Options
+        #source /etc/bash_completion.d/git-prompt.sh 
+        #source ~/.git-prompt.sh # https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
+        git_info_color='\[\033[;93m\]'
+        export GIT_PS1_SHOWDIRTYSTATE="true"
+        export GIT_PS1_SHOWSTASHSTATE="true"
+        export GIT_PS1_SHOWUNTRACKEDFILES="true"
+        export GIT_PS1_SHOWUPSTREAM="verbose name"
+        export GIT_PS1_SHOWCOLORHINTS="true"
+        export GIT_PS1_DESCRIBE_STYLE="branch"
+        PS1=$prompt_color'┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)'$prompt_color')}'$git_info_color'$(__git_ps1)'$prompt_color'('$info_color'\u${prompt_symbol}\h'$prompt_color')-[\[\033[0;1m\]\w'$prompt_color']$(check_prev_cmd)\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
+    else PS1=$prompt_color'┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)'$prompt_color')}('$info_color'\u${prompt_symbol}\h'$prompt_color')-[\[\033[0;1m\]\w'$prompt_color']$(check_prev_cmd)\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
+    fi
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -143,6 +143,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-if command -v neofetch &> /dev/null
+if [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
 then neofetch
 fi
