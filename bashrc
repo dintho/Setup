@@ -80,7 +80,7 @@ if [ "$color_prompt" = yes ]; then
 	info_color='\[\033[1;31m\]'
 	prompt_symbol=💀
     fi
-    if [ -f /etc/bash_completion.d/git-prompt.sh ] || [ -f ~/.git-prompt.sh ]; then # Setting GIT PS1 Options
+    if [ -f /etc/bash_completion.d/git-prompt* ] || [ -f ~/.git-prompt.sh ]; then # Setting GIT PS1 Options
         #source /etc/bash_completion.d/git-prompt.sh 
         #source ~/.git-prompt.sh # https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
         git_info_color='\[\033[;93m\]'
