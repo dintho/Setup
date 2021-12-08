@@ -202,7 +202,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias grep='grep --color=auto'
-    alias ip='ip --color=auto'
     alias ls='ls --color=auto'
     alias vdir='vdir --color=auto'
 
@@ -224,6 +223,7 @@ alias duks='du -kcs / |sort -m|head -15'
 alias history="history 0"
 alias gdiff='git diff --no-index'
 alias graph='git log --all --decorate --oneline --graph --stat'
+alias ip='ip -c'
 alias la='ls -la'
 alias ll='ls -l'
 alias vi='vim'
