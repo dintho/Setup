@@ -14,7 +14,6 @@ HISTCONTROL=ignoredups
 
 # append to the history file, don't overwrite it
 shopt -s histappend
-PROMPT_COMMAND="history -n; history -a"
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
@@ -90,8 +89,8 @@ if [ "$color_prompt" = yes ]; then
         export GIT_PS1_SHOWUPSTREAM="verbose name"
         export GIT_PS1_SHOWCOLORHINTS="true"
         export GIT_PS1_DESCRIBE_STYLE="branch"
-        PS1=$prompt_color'┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)'$prompt_color')}'$git_info_color'$(__git_ps1)'$prompt_color'('$info_color'\u${prompt_symbol}\h'$prompt_color')-[\[\033[0;1m\]\w'$prompt_color']$(check_prev_cmd)\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
-    else PS1=$prompt_color'┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)'$prompt_color')}('$info_color'\u${prompt_symbol}\h'$prompt_color')-[\[\033[0;1m\]\w'$prompt_color']$(check_prev_cmd)\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
+        PS1=$prompt_color'┌──('$info_color'\u${prompt_symbol}\h'$prompt_color')${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)'$prompt_color')}'$git_info_color'$(__git_ps1)'$prompt_color'-[\[\033[0;1m\]\w'$prompt_color']$(check_prev_cmd)\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
+    else PS1=$prompt_color'┌──('$info_color'\u${prompt_symbol}\h'$prompt_color')${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)'$prompt_color')}-[\[\033[0;1m\]\w'$prompt_color']$(check_prev_cmd)\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
     fi
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
@@ -117,21 +116,49 @@ if [ -x /usr/bin/dircolors ]; then
     export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
     export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
     export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+alias diff='diff --color=auto'
+alias dir='dir --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias ls='ls --color=auto'
+alias vdir='vdir --color=auto'
 fi
 
 # colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+export EDITOR=vim
+export VISUAL="$EDITOR"
+alias cls='clear'
+alias duks='du -kcs / |sort -m|head -15'
+alias gdiff='git diff --no-index'
+alias graph='git log --all --decorate --oneline --graph --stat'
+alias ip='ip -c'
+alias la='ls -la'
+alias ll='ls -l'
+alias vi='vim'
+alias xx='exit'
+
+
+h() {
+[[ -z $1 ]] && history
+[[ -n $1 ]] && history|grep "$@"
+}
+
+jn() {
+if [[ -z $PYENV_VIRTUAL_ENV ]]
+then echo -e "no pyenv set"
+else $PYENV_VIRTUAL_ENV/bin/jupyter-notebook --no-browser
 fi
+}
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
