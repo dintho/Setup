@@ -99,6 +99,7 @@ NEWLINE_BEFORE_PROMPT=yes
 if [ "$color_prompt" = yes ]; then
     # override default virtualenv indicator in prompt
     VIRTUAL_ENV_DISABLE_PROMPT=1
+    check_prev_cmd() { [ $? = 0 ] && echo ✅ || echo ❌;}
 # Enabling and setting git info var to be used in prompt config.
 if [ -f /etc/bash_completion.d/git-prompt* ] || [ -f ~/.git-prompt.sh ]; then # Setting GIT PS1 Options
 source /etc/bash_completion.d/git-prompt.sh 
@@ -110,10 +111,10 @@ export GIT_PS1_SHOWUPSTREAM="verbose name"
 export GIT_PS1_SHOWCOLORHINTS="true"
 export GIT_PS1_DESCRIBE_STYLE="branch"
 
-    PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%B%F{%(#.red.blue)}%n$prompt_symbol%m%b%F{%(#.blue.green)})%B%F{%(#.blue.white}$(__git_ps1)%b%F{%(#.blue.green)}-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
+    PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%B%F{%(#.red.blue)}%n$prompt_symbol%m%b%F{%(#.blue.green)})%B%F{%(#.blue.white}$(__git_ps1)%b%F{%(#.blue.green)}-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]$(check_prev_cmd)\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
     RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})%(1j. %j %F{yellow}%B⚙%b%F{reset}.)'
 else
-    PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%B%F{%(#.red.blue)}%n$prompt_symbol%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
+    PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%B%F{%(#.red.blue)}%n$prompt_symbol%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]$(check_prev_cmd)\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
     RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})%(1j. %j %F{yellow}%B⚙%b%F{reset}.)'
 fi
     # enable syntax-highlighting
