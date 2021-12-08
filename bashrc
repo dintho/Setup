@@ -1,6 +1,10 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
+# Source Global Definitions
+if [ -f /etc/bashrc ]
+    then . /etc/bashrc
+fi
 
 # If not running interactively, don't do anything
 case $- in
@@ -117,13 +121,13 @@ if [ -x /usr/bin/dircolors ]; then
     export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
     export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
-alias diff='diff --color=auto'
-alias dir='dir --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias grep='grep --color=auto'
-alias ls='ls --color=auto'
-alias vdir='vdir --color=auto'
+    alias diff='diff --color=auto'
+    alias dir='dir --color=auto'
+    alias egrep='egrep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias grep='grep --color=auto'
+    alias ls='ls --color=auto'
+    alias vdir='vdir --color=auto'
 fi
 
 # colored GCC warnings and errors
@@ -135,6 +139,7 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
+set -o vi
 export EDITOR=vim
 export VISUAL="$EDITOR"
 alias cls='clear'
