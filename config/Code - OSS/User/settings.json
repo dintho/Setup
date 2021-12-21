@@ -1,0 +1,55 @@
+{
+"cSpell.enableFiletypes": [
+    "shellscript"
+    "ssh_config"
+],
+    "editor.bracketPairColorization.enabled": true,
+    "editor.copyWithSyntaxHighlighting": false,
+    "editor.cursorStyle": "underline",
+    "editor.formatOnPaste": true,
+    "editor.guides.bracketPairs": true,
+    "editor.renderControlCharacters": true,
+    "editor.renderWhitespace": "all",
+    "editor.wordWrap": "on",
+    "explorer.incrementalNaming": "smart",
+    "files.autoGuessEncoding": true,
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 2000,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "indentRainbow.colors": [
+        "rgba(255,255,64,0.15)",
+        "rgba(127,255,127,0.15)",
+        "rgba(255,127,255,0.15)",
+        "rgba(79,236,236,0.15)"
+    ],
+    "markdown.extension.preview.autoShowPreviewToSide": true,
+    "markdown.extension.print.theme": "dark",
+    "markdown.extension.toc.slugifyMode": "gitlab",
+    "search.showLineNumbers": true,
+    "security.workspace.trust.banner": "always",
+    "security.workspace.trust.startupPrompt": "never"
+    "security.workspace.trust.untrustedFiles": "open",
+    "shellcheck.executablePath": "/usr/bin/shellcheck",
+    "telemetry.telemetryLevel": "off",
+    "terminal.explorerKind": "external",
+    "terminal.external.linuxExec": "konsole",
+    "terminal.external.osxExec": "iTerm.app",
+    "update.showReleaseNotes": false,
+    "window.closeWhenEmpty": true,
+    "window.openFilesInNewWindow": "off",
+    "window.openFoldersInNewWindow": "off",
+    "workbench.colorCustomizations": {"editor.foreground":"#e98a1eda"},
+    "workbench.colorTheme": "Night Owl Black",
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter.notebook.ipynb"
+    },
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.enableExperiments": false,
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "workbench.startupEditor": "newUntitledFile",
+    "workbench.view.alwaysShowHeaderActions": true,
+    "window.zoomLevel": -0.5
+
+}
