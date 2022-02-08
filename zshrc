@@ -240,7 +240,16 @@ then echo -e "no pyenv set"
 else $PYENV_VIRTUAL_ENV/bin/jupyter-notebook --no-browser
 fi
 }
-
+#Kube aliases
+if command -v kubectl  1>/dev/null 2>&1; then
+    if [ ! -f /usr/share/zsh/site-functions/_kubectl ]
+      then  source <(kubectl completion zsh)
+    fi  
+    if command -v kubecolor  1>/dev/null 2>&1; then
+      alias kubectl="kubecolor"
+      compdef kubecolor=kubectl
+    fi  
+fi
 
 # enable auto-suggestions based on the history
 if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then

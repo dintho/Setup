@@ -170,8 +170,8 @@ alias jctl="journalctl -p 3 -xb" # Get the error messages from journalctl
 alias gdiff='git diff --no-index'
 alias graph='git log --all --decorate --oneline --graph --stat'
 alias ip='ip -c'
-alias la='ls -la'
-alias ll='ls -l'
+alias la='ls -lha'
+alias ll='ls -lh'
 alias psmem='ps auxf | sort -nr -k 4'
 alias vi='vim'
 alias xx='exit'
@@ -196,7 +196,17 @@ then echo -e "no pyenv set"
 else $PYENV_VIRTUAL_ENV/bin/jupyter-notebook --no-browser
 fi
 }
-
+#Kube aliases
+if command -v kubectl  1>/dev/null 2>&1; then
+    if [ ! -f /usr/share/bash-completion/completions/kubectl ]
+      then  source <(kubectl completion bash)
+    fi
+    if command -v kubecolor  1>/dev/null 2>&1; then
+      alias kubectl="kubecolor"
+      complete -o default -F __start_kubectl kubecolor
+    fi 
+fi
+ 
 if [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
 then neofetch
 fi
