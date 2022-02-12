@@ -198,12 +198,17 @@ fi
 }
 #Kube aliases
 if command -v kubectl  1>/dev/null 2>&1; then
+    if command -v kubecolor  1>/dev/null 2>&1
+        then alias kc="kubecolor"
+        else alias kc="kubectl"
+    fi
     if [ ! -f /usr/share/bash-completion/completions/kubectl ]
       then  source <(kubectl completion bash)
-    fi
-    if command -v kubecolor  1>/dev/null 2>&1; then
-      alias kubectl="kubecolor"
-      complete -o default -F __start_kubectl kubecolor
+            complete -o default -F __start_kubectl kc
+#      elif [ ! -f /usr/share/bash-completion/completions/kc ]
+#           then cd /usr/share/bash-completion/completions
+#                sed 's/kubectl/kc/g' kubectl > kc
+
     fi 
 fi
  
