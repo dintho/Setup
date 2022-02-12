@@ -205,11 +205,11 @@ if command -v kubectl  1>/dev/null 2>&1; then
     if [ ! -f /usr/share/bash-completion/completions/kubectl ]
       then  source <(kubectl completion bash)
             complete -o default -F __start_kubectl kc
-#      elif [ ! -f /usr/share/bash-completion/completions/kc ]
-#           then cd /usr/share/bash-completion/completions
-#                sed 's/kubectl/kc/g' kubectl > kc
-
+      elif [ ! -f /usr/share/bash-completion/completions/kc ]
+      then source /usr/share/bash-completion/completions/kubectl
+           complete -o default -F __start_kubectl kc
     fi 
+
 fi
  
 if [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
