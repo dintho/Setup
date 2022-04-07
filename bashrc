@@ -211,8 +211,12 @@ if command -v kubectl  1>/dev/null 2>&1; then
     fi 
 
 fi
- 
+
+if [ -x "$(command -v lolcat)" ]
+    then alias lolcat='lolcat --spread=999 -F 1'
+fi
+
 if [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
-then neofetch
+    then neofetch
 fi
 
