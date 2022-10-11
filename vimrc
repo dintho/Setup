@@ -7,7 +7,6 @@ syntax enable
 command W :execute 'silent! write !sudo tee % >/dev/null' | edit! " Write with Sudo and reload file 
 command WQ :execute 'silent! write !sudo tee % >/dev/null' | quit! " Write with Sudo and quit
 
-colorscheme vividchalk                      " Set color scheme
 set t_Co=256                                " set 256 colors
 set nobackup 	                            " no backup files
 set nowritebackup                           " only in case you don't want a backup file while editing
@@ -20,3 +19,11 @@ set expandtab                               " expand tabs into spaces
 set cursorline                              " shows line under the cursor's line
 set showmatch                               " shows matching part of bracket pairs (), [], {}
 set vb                                      " Set Visual Bell
+try 
+  colorscheme vividchalk                    " Set color scheme
+  catch
+  try
+    colorscheme ron                         " Set color scheme
+    catch
+  endtry
+endtry
