@@ -147,13 +147,24 @@ if [ -x /usr/bin/dircolors ]; then
     export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
     export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
+    # Replace ls with exa
+    if command -v exa  1>/dev/null 2>&1; then
+        alias ls='exa --color=always --group-directories-first --icons' # preferred listing
+        alias la='ls -agHl --git'  # all files and dirs
+        alias ll='ls -gHl --git'  # long format
+        alias lt='ls -aT' # tree listing
+        alias l.="exa -a | egrep '^\.'"                                     # show only dotfiles
+    else
+        alias ls='ls --color=auto'
+    fi
     alias diff='diff --color=auto'
     alias dir='dir --color=auto'
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias grep='grep --color=auto'
-    alias ls='ls --color=auto'
+    alias ip="ip -color"
     alias vdir='vdir --color=auto'
+
 
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -169,7 +180,10 @@ alias duks='du -kcs / |sort -m|head -15'
 alias jctl="journalctl -p 3 -xb" # Get the error messages from journalctl
 alias gdiff='git diff --no-index'
 alias graph='git log --all --decorate --oneline --graph --stat'
-alias ip='ip -c'
+alias history="history 0"
+alias hw='hwinfo --short'                          # Hardware Info
+alias jctl="journalctl -p 3 -xb" # Get the error messages from journalctl
+alias ip='ip -cbr'
 alias la='ls -lha'
 alias ll='ls -lh'
 alias psmem='ps auxf | sort -nr -k 4'
@@ -177,12 +191,23 @@ alias vi='vim'
 alias xx='exit'
 
 # Arch
+if [ -x "$(command -v pacman)" ] ; then 
+alias apt='man pacman'
+alias apt-get='man pacman'
+alias big="expac -H M '%m\t%n' | sort -h | nl"     # Sort installed packages according to size in MB
 alias cleanup='sudo pacman -Rns `pacman -Qtdq`' # Cleanup orphaned packages
 alias fixpacman="sudo rm /var/lib/pacman/db.lck"
+alias gitpkg='pacman -Q | grep -i "\-git" | wc -l' # List amount of -git packages
 alias helpme='cht.sh --shell'
+alias mirror="sudo reflector -f 30 -l 30 --number 10 --verbose --save /etc/pacman.d/mirrorlist"
+alias mirrord="sudo reflector --latest 50 --number 20 --sort delay --save /etc/pacman.d/mirrorlist"
+alias mirrors="sudo reflector --latest 50 --number 20 --sort score --save /etc/pacman.d/mirrorlist"
+alias mirrora="sudo reflector --latest 50 --number 20 --sort age --save /etc/pacman.d/mirrorlist"
 alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl" # Recent installed packages
 alias rmpkg="sudo pacman -Rdd"
 alias upd='/usr/bin/update'
+fi
+
 
 
 #  First argument: string to put a box around. Second argument: character to use for box (default is '=') Same as command #4948, but shorter, and without the utility function. 
