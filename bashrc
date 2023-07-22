@@ -242,6 +242,8 @@ fi
 
 if [ -x "$(command -v lolcat)" ]
     then alias lolcat='lolcat --spread=999 -F 1'
+    # This uses 256 colors to change line colors   use for i in {0..256}; do echo -e "\033[38;5;${i}m $i \c"; done to check what they look like 
+    else alias lolcat='while read line ; do colormax=231;colormin=22 echo -e "\033[38;5;$(( $RANDOM %(colormax - colormin) + colormin ))m$line"; done'
 fi
 
 if [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
