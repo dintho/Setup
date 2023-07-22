@@ -185,6 +185,9 @@ alias rmpkg="sudo pacman -Rdd"
 alias upd='/usr/bin/update'
 
 
+#  First argument: string to put a box around. Second argument: character to use for box (default is '=') Same as command #4948, but shorter, and without the utility function. 
+boxit() { t="$1xxxx";c=${2:-=}; echo ${t//?/$c}; echo "$c $1 $c"; echo ${t//?/$c}; }
+
 h() {
 [[ -z $1 ]] && history
 [[ -n $1 ]] && history|grep "$@"
