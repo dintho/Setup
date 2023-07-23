@@ -188,6 +188,7 @@ alias la='ls -lha'
 alias ll='ls -lh'
 alias psmem='ps auxf | sort -nr -k 4'
 alias vi='vim'
+alias weather='curl -s wttr.in/'                                                                                                                                      
 alias xx='exit'
 
 # Arch
