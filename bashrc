@@ -228,11 +228,9 @@ if [ ! -x "$(command -v update)" ]
 then update () {
           PKGMGR=$(grep -w ID /etc/os-release|awk -F= '{print $NF}')
           case $PKGMGR in
-              debian|ubuntu) sudo apt update ;
-                             sudo apt full-upgrade ;;
+              debian|ubuntu) sudo apt update && sudo apt full-upgrade && if if [ -x "$(command -v pihole)" ]; then pihole -up ;pihole -g ;fi ;;
               garuda) sudo update ;;
-              nixos) sudo nix-channel --update
-                     sudo nixos-rebuild switch;;
+              nixos) sudo nix-channel --update && sudo nixos-rebuild switch;;
               *) echo "update is not configured for $PKGMGR"::
           esac
      }
