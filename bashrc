@@ -224,16 +224,37 @@ then echo -e "no pyenv set"
 else $PYENV_VIRTUAL_ENV/bin/jupyter-notebook --no-browser
 fi
 }
+check_reboot_req() {
+    if [ -x "$(command -v needrestart)" ]
+    then sudo needrestart -q
+         RESTARTCHK=$?
+    elif [ -x "$(command -v needs-restarting)" ]
+    then needs-restarting -r
+         RESTARTCHK=$?
+    elif [ -f /var/run/reboot-required ]
+    then RESTARTCHK=1
+    fi
+    if [[ $RESTARTCHK -gt 0 ]]
+    then echo "reboot required!: Reboot Now?[y/n]"
+         read ans
+         if [[ $(echo $ans |grep -ic y) -eq 1 ]]
+            then sudo reboot
+         fi
+    fi
+}
+
 if [ ! -x "$(command -v update)" ]
 then update () {
-          PKGMGR=$(grep -w ID /etc/os-release|awk -F= '{print $NF}')
-          case $PKGMGR in
-              debian|ubuntu) sudo apt update && sudo apt full-upgrade && if [ -x "$(command -v pihole)" ]; then pihole -up ;pihole -g ;fi ;if [ -x "$(command -v do-release-upgrade)" ]; then sudo do-release-upgrade ;fi ;;
-              garuda) sudo update ;;
-              nixos) sudo nix-channel --update && sudo nixos-rebuild switch;;
-              *) echo "update is not configured for $PKGMGR";;
-          esac
-     }
+    PKGMGR=$(grep -w ID /etc/os-release|awk -F= '{print $NF}')
+    case $PKGMGR in
+        debian|ubuntu) sudo apt update && sudo apt full-upgrade && check_reboot_req && \
+                       if [ -x "$(command -v pihole)" ]; then pihole -up && pihole -g ;fi && \
+                       if [ -x"$(command -v do-release-upgrade)" ];then sudo do-release-upgrade;check_reboot_req;fi ;;
+        garuda) sudo update ;;
+        nixos) sudo nix-channel --update && sudo nixos-rebuild switch;;
+        *) echo "update is not configured for $PKGMGR";;
+    esac
+}
 fi
 
 if [ -x "$(command -v lolcat)" ]
