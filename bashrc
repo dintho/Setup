@@ -226,16 +226,16 @@ fi
 }
 if [ ! -x "$(command -v update)" ]
 then update () {
-PKGMGR=$(grep -w ID /etc/os-release|awk -F= '{print $NF}')
-case $PKGMGR in
-debian|ubuntu) sudo apt update ;
-               sudo apt full-upgrade ;;
-garuda) sudo update ;;
-nixos) sudo nix-channel --update
-sudo nixos-rebuild switch;;
-*) echo "update is not configured for $PKGMGR"::
-esac
-}
+          PKGMGR=$(grep -w ID /etc/os-release|awk -F= '{print $NF}')
+          case $PKGMGR in
+              debian|ubuntu) sudo apt update ;
+                             sudo apt full-upgrade ;;
+              garuda) sudo update ;;
+              nixos) sudo nix-channel --update
+                     sudo nixos-rebuild switch;;
+              *) echo "update is not configured for $PKGMGR"::
+          esac
+     }
 fi
 
 if [ -x "$(command -v lolcat)" ]
