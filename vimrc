@@ -7,6 +7,7 @@ syntax enable
 command W :execute 'silent! write !sudo tee % >/dev/null' | edit! " Write with Sudo and reload file 
 command WQ :execute 'silent! write !sudo tee % >/dev/null' | quit! " Write with Sudo and quit
 
+set background=dark                         " setting background to black
 set t_Co=256                                " set 256 colors
 set nobackup 	                            " no backup files
 set nowritebackup                           " only in case you don't want a backup file while editing

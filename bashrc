@@ -36,7 +36,7 @@ if [[ -f  /usr/share/doc/find-the-command/ftc.bash ]];then
 source /usr/share/doc/find-the-command/ftc.bash
 fi
 # Load starship prompt if starship is installed
-if  [ -x /usr/bin/starship ]; then
+if  [ -x /usr/bin/starship ] && [[ $TERM != "dumb" ]]; then
     __main() {
         local major="${BASH_VERSINFO[0]}"
         local minor="${BASH_VERSINFO[1]}"
@@ -156,13 +156,15 @@ if [ -x /usr/bin/dircolors ]; then
         alias l.="exa -a | egrep '^\.'"                                     # show only dotfiles
     else
         alias ls='ls --color=auto'
+        alias la='ls -lha'
+        alias ll='ls -lh'
     fi
     alias diff='diff --color=auto'
     alias dir='dir --color=auto'
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias grep='grep --color=auto'
-    alias ip="ip -color"
+    alias ip="ip --color"
     alias vdir='vdir --color=auto'
 
 
@@ -177,18 +179,15 @@ export EDITOR=vim
 export VISUAL="$EDITOR"
 alias cls='clear'
 alias duks='du -kcs / |sort -m|head -15'
-alias jctl="journalctl -p 3 -xb" # Get the error messages from journalctl
 alias gdiff='git diff --no-index'
-alias graph='git log --all --decorate --oneline --graph --stat'
+alias graph='git graph'
 alias history="history 0"
 alias hw='hwinfo --short'                          # Hardware Info
+alias ipa='ip -br a'
 alias jctl="journalctl -p 3 -xb" # Get the error messages from journalctl
-alias ip='ip -br -c'
-alias la='ls -lha'
-alias ll='ls -lh'
 alias psmem='ps auxf | sort -nr -k 4'
 alias vi='vim'
-alias weather='curl -s wttr.in/'                                                                                                                                      
+alias weather='curl -s wttr.in/'
 alias xx='exit'
 
 # Arch
@@ -225,20 +224,18 @@ then echo -e "no pyenv set"
 else $PYENV_VIRTUAL_ENV/bin/jupyter-notebook --no-browser
 fi
 }
-#Kube aliases
-if command -v kubectl  1>/dev/null 2>&1; then
-    if command -v kubecolor  1>/dev/null 2>&1
-        then alias kc="kubecolor"
-        else alias kc="kubectl"
-    fi
-    if [ ! -f /usr/share/bash-completion/completions/kubectl ]
-      then  source <(kubectl completion bash)
-            complete -o default -F __start_kubectl kc
-      elif [ ! -f /usr/share/bash-completion/completions/kc ]
-      then source /usr/share/bash-completion/completions/kubectl
-           complete -o default -F __start_kubectl kc
-    fi 
-
+if [ ! -x "$(command -v update)" ]
+then update () {
+PKGMGR=$(grep -w ID /etc/os-release|awk -F= '{print $NF}')
+case $PKGMGR in
+debian|ubuntu) sudo apt update ;
+               sudo apt full-upgrade ;;
+garuda) sudo update ;;
+nixos) sudo nix-channel --update
+sudo nixos-rebuild switch;;
+*) echo "update is not configured for $PKGMGR"::
+esac
+}
 fi
 
 if [ -x "$(command -v lolcat)" ]
@@ -247,7 +244,26 @@ if [ -x "$(command -v lolcat)" ]
     else alias lolcat='while read line ; do colormax=231;colormin=22 echo -e "\033[38;5;$(( $RANDOM %(colormax - colormin) + colormin ))m$line"; done'
 fi
 
-if [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
+#Kube aliases
+if command -v kubectl  1>/dev/null 2>&1; then
+    if command -v kubecolor  1>/dev/null 2>&1
+        then alias kc="kubecolor"
+        else kc () { kubectl $@ |lolcat;}
+    fi
+    if [ ! -f /usr/share/bash-completion/completions/kubectl ]
+      then  source <(kubectl completion bash)
+            complete -o default -F __start_kubectl k kc
+      elif [ ! -f /usr/share/bash-completion/completions/kc ]
+      then source /usr/share/bash-completion/completions/kubectl
+           complete -o default -F __start_kubectl k kc
+    fi 
+
+fi
+
+
+if [ -x "$(command -v fastfetch)" ]  && [ $(id -u) -ne 0 ]
+    then fastfetch
+elif [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
     then neofetch
 fi
 

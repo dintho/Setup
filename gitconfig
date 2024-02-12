@@ -1,52 +1,101 @@
 [alias]
-    alias = ! git config --get-regexp '^alias\\.' |sed -e 's/^alias\\.//' -e 's/\\ /\\ =\\ /' -e 's/\\(^.\\{1,60\\}\\).*/\\1/'
-    co = checkout --recurse-submodules
+    alias = ! git config --get-regexp '^alias\\.' | sed -e 's/^alias\\.//' -e 's/\\ /\\ =\\ /' -e 's/\\(^.\\{1,60\\}\\).*/\\1/'
+    co = checkout
+    cam = commit -am
     dt = difftool
-    graph = log --all --decorate --oneline --graph --stat
-    mrq = "!bash -c 'declare _R _RT _B _T _D; echo -n \"remote: \" && read _R; echo -n \"target: \" && read _RT; echo -n \"title : \" && read _T; echo -n \"descr : \" && read _D; _B=\"$(git symbolic-ref --short HEAD 2>/dev/null)\"; git push --set-upstream \"${_R}\" \"${_B}\" -o merge_request.create -o merge_request.target=\"${_RT}\" -o merge_request.remove_source_branch -o merge_request.title=\"${_T}\" -o merge_request.description=\"${_D}\"'"
+    #   %h: abbreviated commit hash
+    #   %d: ref names, like the --decorate option of git-log(1)
+    #   %cn: commiter name
+    #   %ce: committer email
+    #   %cr: committer date, relative
+    #   %ci: committer date, ISO 8601-like format
+    #   %an: author name
+    #   %ae: author email
+    #   %ar: author date, relative
+    #   %ai: author date, ISO 8601-like format
+    #   %s: subject
+    graph = log --all --stat --graph --date=format:'%F %T %z' --pretty=tformat:'%C(Yellow)%h%d%Creset %C(Magenta)(%cd)%Creset %C(Cyan)%cn <%ce>%Creset %s'
+    #graph="git  log --all --stat --graph --pretty=format:'%C(auto)%h%d%Creset %C(cyan)(%cD)%Creset %C(green)%cn <%ce>%Creset %s'"
+    #graph = log --all --decorate --oneline --graph --stat --date=rfc
     mt = mergetool
-    up = pull 
+    # mrq = "!bash -c 'declare _R _RT _B _T _D; echo -n \"remote: \" && read _R; echo -n \"target: \" && read _RT; echo -n \"title : \" && read _T; echo -n \"descr : \" && read _D; _B=\"$(git symbolic-ref --short HEAD 2>/dev/null)\"; git push --set-upstream \"${_R}\" \"${_B}\" -o merge_request.create -o merge_request.target=\"${_RT}\" -o merge_request.remove_source_branch -o merge_request.title=\"${_T}\" -o merge_request.description=\"${_D}\"'"
+    mrq = "!bash -c 'declare _R _RT _B _T _D; echo -n \"title : \" && read _T && _T=\"$(echo $_T)\"; echo -n \"descr : \" && read _D && _D=\"$(echo $_D)\";_R=\"$(git remote)\";_RT=\"$(basename $(git symbolic-ref refs/remotes/origin/HEAD))\"; _B=\"$(git symbolic-ref --short HEAD 2>/dev/null)\"; git push --set-upstream \"${_R}\" \"${_B}\" -o merge_request.create -o merge_request.target=\"${_RT}\" -o merge_request.remove_source_branch -o merge_request.title=\"${_T}\" -o merge_request.description=\"${_D}\"'"
+    up = pull --recurse-submodules
+    
+[branch]
+    autosetuprebase = always
 
 [color]
-    branch = auto 
-    decorate = auto 
-    diff = auto 
-    grep = auto 
-    interactive = auto 
-    showbranch = auto 
-    status = auto 
-    ui = auto 
+    branch = auto
+    decorate = auto
+    diff = auto
+    grep = auto
+    interactive = auto
+    log = auto
+    pager = true
+    showbranch = auto
+    status = auto
+    ui = auto
+    tag = auto
+
+[commit]
+    # Always remove comment lines & extra whitespace, see git-commit(1)
+    cleanup = strip
+    # Includes HEAD..index diff in commit log message template
+    verbose = true
 
 [core]
     editor = code --wait
-    excludefile = ~/.gitignore
-    pager = less
-    symliks = true
-    whitspace = trailing-space
-	autocrlf = input
+    excludesfile = /Users/tmackell/.gitignore
+    symlinks = true
+    whitespace = trailing-space
+
 [diff]
-    context = 9
     tool = vimdiff
+    context = 1
+
 [difftool]
     prompt = true
+
 [fetch]
     prune = true
-    prunTags = true
+    pruneTags = true
+    recurseSubmodules = true
+
 [init]
-	defaultBranch = main
+    defaultBranch = main
+
 [merge]
+    defaultToUpstream = true
     tool = vimdiff
-[pager]
-	branch = false
+
 [protocol]
     version = 2
+
 [pull]
-    prune = true 
-    rebase = true 
+    prune = true
+    rebase = true
+
 [push]
     default = simple
+    autoSetupRemote = true
+    followTags = true
+    recurseSubmodules = check
+
+[rebase]
+    autoSquash = true
+    autoStash = true
+    stat = true
+
+[stash]
+    showPatch = true
+    showStat = true
+
 [submodule]
     recurse = true
 
+[tag]
+    sort = -authordate
+
 [user]
-	name = Dintho
+    name = Dintho
