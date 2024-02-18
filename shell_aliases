@@ -1,0 +1,258 @@
+#  First argument: string to put a box around. Second argument: character to use for box (default is '=') Same as command #4948, but shorter, and without the utility function. 
+boxit() { t="$1xxxx";c=${2:-=}; echo ${t//?/$c}; echo "$c $1 $c"; echo ${t//?/$c}; }
+
+# Function to check if a system reboot is required
+check_reboot_req() {
+    # Check if needrestart command is available
+    if [ -x "$(command -v needrestart)" ]; then
+        sudo needrestart -q
+        RESTARTCHK=$?
+    # Check if needs-restarting command is available (for RHEL/CentOS)
+    elif [ -x "$(command -v needs-restarting)" ]; then
+        needs-restarting -r
+        RESTARTCHK=$?
+    # Check if /var/run/reboot-required file exists (for Ubuntu)
+    elif [ -f /var/run/reboot-required ]; then
+        RESTARTCHK=1
+    # Check if zypper is available (for openSUSE/SLES)
+    elif [ -x "$(command -v zypper)" ]; then
+        # Check if the kernel has been updated
+        if zypper ps -s | grep -q 'kernel'; then
+            RESTARTCHK=1
+        fi
+    # Check if pacman is available (for Arch Linux/Garuda)
+    elif [ -x "$(command -v pacman)" ]; then
+        # Check if the kernel package (linux) has been updated
+        if pacman -Qq | grep -q '^linux '; then
+            RESTARTCHK=1
+        fi
+    # Check if nixos-rebuild is available (for NixOS)
+    elif [ -x "$(command -v nixos-rebuild)" ]; then
+        # Check if the system has been rebuilt
+        if [ -f /run/booted-system/kernel ]; then
+            RESTARTCHK=1
+        fi
+    else
+        # Fallback for other systems or if specific checks are not available
+        RESTARTCHK=0
+    fi
+    # If a reboot is required, prompt the user to reboot
+    if [[ $RESTARTCHK -gt 0 ]]; then
+        echo "Reboot required! Reboot Now? [y/n]"
+        read ans
+        if [[ $(echo $ans | grep -ic y) -eq 1 ]]; then
+            sudo reboot
+        fi
+    fi
+}
+
+alias history='history 0'
+h() {
+[[ -z $1 ]] && history
+[[ -n $1 ]] && history|grep "$@"
+}
+
+jn() {
+if [[ -z $PYENV_VIRTUAL_ENV ]]
+then echo -e "no pyenv set"
+else $PYENV_VIRTUAL_ENV/bin/jupyter-notebook --no-browser
+fi
+}
+
+# Function to update the system based on the package manager
+pkgs() {
+    PKGMGR=$(grep -w ID /etc/os-release | awk -F= '{print $NF}')
+    case $1 in
+        update)
+            case $PKGMGR in
+                arch|manjaro)
+                    sudo pacman -Syyu
+                    ;;
+                debian|ubuntu)
+                    sudo apt update && sudo apt full-upgrade
+                    if [ -x "$(command -v pihole)" ]; then
+                        pihole -up && pihole -g
+                    fi
+                    if [ -x "$(command -v do-release-upgrade)" ]; then
+                        sudo do-release-upgrade
+                    fi
+                    ;;
+                fedora|rhel|centos)
+                    sudo dnf clean all && sudo dnf makecache && sudo dnf update
+                    ;;
+                garuda)
+                    sudo update
+                    ;;
+                nixos)
+                    sudo nix-channel --update && sudo nixos-rebuild switch
+                    ;;
+                opensuse-leap|opensuse-tumbleweed|sles)
+                    sudo zypper refresh && sudo zypper refresh -s && sudo zypper update
+                    ;;
+                *)
+                    echo "Update is not configured for $PKGMGR"
+                    ;;
+            esac
+            ;;
+        search)
+            case $PKGMGR in
+                arch|garuda|manjaro)
+                    sudo pacman -Ss $2
+                    ;;
+                debian|ubuntu)
+                    apt-cache search $2
+                    ;;
+                fedora|rhel|centos)
+                    sudo dnf search $2
+                    ;;
+                nixos)
+                    nix search $2
+                    ;;
+                opensuse-leap|opensuse-tumbleweed|sles)
+                    sudo zypper search $2
+                    ;;
+                *)
+                    echo "Search is not configured for $PKGMGR"
+                    ;;
+            esac
+            ;;
+        install)
+            case $PKGMGR in
+                arch|garuda|manjaro)
+                    sudo pacman -S $2
+                    ;;
+                debian|ubuntu)
+                    sudo apt install $2
+                    ;;
+                fedora|rhel|centos)
+                    sudo dnf install $2
+                    ;;
+                nixos)
+                    sudo nix-env -iA nixos.$2
+                    ;;
+                opensuse-leap|opensuse-tumbleweed|sles)
+                    sudo zypper install $2
+                    ;;
+                *)
+                    echo "Install is not configured for $PKGMGR"
+                    ;;
+            esac
+            ;;
+        remove)
+            case $PKGMGR in
+                arch|garuda|manjaro)
+                    sudo pacman -R $2
+                    ;;
+                debian|ubuntu)
+                    sudo apt remove $2
+                    ;;
+                fedora|rhel|centos)
+                    sudo dnf remove $2
+                    ;;
+                nixos)
+                    sudo nix-env --uninstall $2
+                    ;;
+                opensuse-leap|opensuse-tumbleweed|sles)
+                    sudo zypper remove $2
+                    ;;
+                *)
+                    echo "Remove is not configured for $PKGMGR"
+                    ;;
+            esac
+            ;;
+        *)
+            echo "Usage: pkgs update (to update packages), pkgs search [package] (to search for packages), pkgs install [package] (to install a package), or pkgs remove [package] (to remove a package)"
+            ;;
+    esac
+    check_reboot_req || echo "Failed to check reboot requirement"
+}
+alias update='pkgs update'
+
+if [ -x "$(command -v lolcat)" ]
+    then alias lolcat='lolcat --spread=999 -F 1'
+    # This uses 256 colors to change line colors   use for i in {0..256}; do echo -e "\033[38;5;${i}m $i \c"; done to check what they look like 
+    else alias lolcat='while read line ; do colormax=231;colormin=22 echo -e "\033[38;5;$(( $RANDOM %(colormax - colormin) + colormin ))m$line"; done'
+fi
+
+#Kube aliases
+if command -v kubectl  1>/dev/null 2>&1; then
+    if command -v kubecolor  1>/dev/null 2>&1
+        then alias kc="kubecolor"
+        else kc () { kubectl $@ |lolcat;}
+    fi
+    if [ ! -f /usr/share/bash-completion/completions/kubectl ]
+      then  source <(kubectl completion bash)
+            complete -o default -F __start_kubectl k kc
+      elif [ ! -f /usr/share/bash-completion/completions/kc ]
+      then source /usr/share/bash-completion/completions/kubectl
+           complete -o default -F __start_kubectl k kc
+    fi 
+
+fi
+
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+    export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+    export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+    export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
+    export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+    export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+    export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+    # Replace ls with exa
+    if command -v exa  1>/dev/null 2>&1; then
+        alias ls='exa --color=always --group-directories-first --icons' # preferred listing
+        alias la='ls -agHl --git'  # all files and dirs
+        alias ll='ls -gHl --git'  # long format
+        alias lt='ls -aT' # tree listing
+        alias l.="exa -a | egrep '^\.'"                                     # show only dotfiles
+    else
+        alias ls='ls --color=auto'
+        alias la='ls -lha'
+        alias ll='ls -lh'
+    fi
+    alias diff='diff --color=auto'
+    alias dir='dir --color=auto'
+    alias egrep='egrep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias grep='grep --color=auto'
+    alias ip="ip --color"
+    alias vdir='vdir --color=auto'
+
+
+    # colored GCC warnings and errors
+    export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+else
+    alias ls='ls --color=auto'
+    alias la='ls -lha'
+    alias ll='ls -lh'
+fi
+# Aliases
+
+# Git aliases
+alias gdiff='git diff --no-index'
+alias graph='git graph'
+
+# System and hardware info aliases
+alias cls='clear'
+alias duks='du -kcs / | sort -m | head -15'
+alias hw='hwinfo --short'
+alias ipa='ip -br a'
+alias jctl='journalctl -p 3 -xb'
+alias psmem='ps auxf | sort -nr -k 4'
+alias vi='vim'
+alias xx='exit'
+
+# Weather alias
+alias weather='curl -s wttr.in/'
+
+# fast/neo fetch
+
+if [ -x "$(command -v fastfetch)" ]  && [ $(id -u) -ne 0 ]
+then fastfetch
+elif [ -x "$(command -v neofetch)" ]  && [ $(id -u) -ne 0 ]
+then neofetch
+fi
+
