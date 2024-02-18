@@ -175,20 +175,27 @@ if [ -x "$(command -v lolcat)" ]
 fi
 
 #Kube aliases
-if command -v kubectl  1>/dev/null 2>&1; then
-    if command -v kubecolor  1>/dev/null 2>&1
-        then alias kc="kubecolor"
-        else kc () { kubectl $@ |lolcat;}
-    fi
-    if [ ! -f /usr/share/bash-completion/completions/kubectl ]
-      then  source <(kubectl completion bash)
-            complete -o default -F __start_kubectl k kc
-      elif [ ! -f /usr/share/bash-completion/completions/kc ]
-      then source /usr/share/bash-completion/completions/kubectl
-           complete -o default -F __start_kubectl k kc
-    fi 
+if command -v kubectl 1>/dev/null 2>&1; then
+    if command -v kubecolor 1>/dev/null 2>&1; then
+        alias kc="kubecolor"
+    else
+        kc() { kubectl $@ | lolcat; }
+   fi
 
+    if [[ -n $BASH_VERSION ]]; then
+        if [ ! -f /usr/share/bash-completion/completions/kubectl ]; then
+            source <(kubectl completion bash)
+        else
+            source /usr/share/bash-completion/completions/kubectl
+        fi
+        complete -o default -F __start_kubectl k kc
+    elif [[ -n $ZSH_VERSION ]]; then
+        source <(kubectl completion zsh)
+        compdef _complete k=kubectl
+        compdef _complete kc=kubectl
+    fi
 fi
+
 
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
